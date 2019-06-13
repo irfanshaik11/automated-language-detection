@@ -1,4 +1,4 @@
-# Functions to interact with AWS S3 and Dynamo DB
+# Functions to interact with AWS S3 and Dynamo DB and AWS SQS
 import boto3
 import json
 import time
@@ -10,17 +10,13 @@ SQS = boto3.client(service_name='sqs')
 DYNAMODB = boto3.resource('dynamodb')
 QUEUENAME = "Lang-Detection-Audio-Processing-Request"
 
-#------------- Dynamo DB
+#------------- Dynamo DB ------------------
 
 def db_put_item(table, item):
-    table.put_item(
-	   Item=item
-	)
+    table.put_item(Item=item)
 
 def db_get_item(table, key):
-    response = table.get_item(
-	    Key=key
-	)
+    response = table.get_item(Key=key)
     item = response['Item']
     print(item)
 
@@ -36,7 +32,8 @@ def db_update_item(table, key, field, val):
 		}
 	)
 
-#------------- S3
+#------------- S3 --------------
+
 def download_file_from_s3(bucket_name, file_name, destination):
     try:
         S3.Bucket(bucket_name).download_file(file_name, destination)
@@ -55,7 +52,7 @@ def upload_file_to_s3(bucket_name, file_name):
         print(e)
         return False
 
-#------------- SQS
+#------------- SQS -----------------
 
 def getSQSQueueUrl():
     response = SQS.get_queue_url(QueueName=QUEUENAME)
@@ -78,17 +75,5 @@ def getSQSMessage(queue_url):
 def deleteSQSMessage(queue_url, receipt_handle):
     SQS.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt_handle)
     return True
-
-
-
-
-
-
-
-
-
-
-
-
 
 

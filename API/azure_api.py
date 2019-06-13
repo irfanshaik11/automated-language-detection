@@ -30,7 +30,7 @@ class Video_Upload_API():
         self.API_VIDEO_URL = "https://api.videoindexer.ai/{0}/Accounts/{1}".format(account_type, account_id)
         self.API_VIDEO_INDEX_URL = "https://api.videoindexer.ai/{0}/Accounts/".format(account_id)
 
-    def get_access_token(self):
+    def get_access_token(self) -> str:
         querystring = {"allowEdit": "true"}
         headers = {
             'Ocp-Apim-Subscription-Key': self.subscription_key,
@@ -49,7 +49,7 @@ class Video_Upload_API():
 
         return self.access_token
 
-    def get_video_names(self):
+    def get_video_names(self) -> None:
         url = "https://api.videoindexer.ai/{0}/Accounts/{1}/Videos?accessToken={2}".format(self.account_type,
                                                                                                    self.account_id,
                                                                                                    self.access_token)
@@ -60,8 +60,8 @@ class Video_Upload_API():
             if video_name not in self.video_names:
                 self.video_names.append(video_name)
 
-    def upload_video_file(self, video_name, file_path, language="auto", indexing_preset="AudioOnly",
-                          streaming_preset="Default", replace = False):
+    def upload_video_file(self, video_name:str, file_path:str, language="auto":str, indexing_preset="AudioOnly":str,
+            streaming_preset="Default":str, replace = False:bool) -> str:
 
         if self.access_token == "":
             self.get_access_token()
@@ -87,8 +87,8 @@ class Video_Upload_API():
             #self.check_upload_status(response.json()['id'])
         if "id" in response.json().keys():
             return response.json()["id"] #returns video id
-        
-        return "None" 
+
+        return "None"
 
     def check_upload_status(self, upload_id):
         result = {}
@@ -163,9 +163,9 @@ class Video_Upload_API():
     def get_video_ids(self):
         if self.access_token == "":
             self.get_access_token()
-        
+
         req = requests.get("https://api.videoindexer.ai/{0}/Accounts/{1}/Videos?accessToken={2}".format(self.account_type,self.account_id,self.access_token), verify = False)
-        
+
         Dict = {}
         try:
             for i in req.json()['results']:
@@ -211,7 +211,7 @@ class Video_Upload_API():
             print("Error retrieving response for video from azure: ")
             print(response.json())
             return 0, 0, {}
-        
+
         verbose_language_data_url = response.json()
         #print(y) #prints the retrieved json
         response = requests.get(str(verbose_language_data_url), verify=False)
@@ -256,5 +256,5 @@ class Video_Upload_API():
 
             if str(req.status_code) != str(204):
                 logging.warning("Failed to Delete " + videoId)
-                
+
         return 0
